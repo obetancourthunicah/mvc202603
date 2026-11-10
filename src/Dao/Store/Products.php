@@ -39,7 +39,7 @@ class Products extends Table
             STORE_PRODUCTS_SELECT_ALL
         );
     }
-    public static function getById(int $productId): array
+    public static function getById(int $productId)
     {
         return self::obtenerUnRegistro(
             STORE_PRODUCTS_SELECT_BY_ID,
@@ -92,7 +92,7 @@ class Products extends Table
         );
     }
 
-    public static function delete(int $productId): array
+    public static function delete(int $productId)
     {
         // Sistema de Producción: Es Preferible un soft delete
         // Campo de is_deleted;

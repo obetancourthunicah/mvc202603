@@ -8,6 +8,7 @@ use Utilities\Site;
 use Dao\Store\Products as PrdDao;
 
 const PRODUCT_FORM_VIEW = "mnt/products/productForm";
+const PRODUCT_FORM_XSF_SEED = "85a0ed52-52c6-45b0-b641-b57a6262ddb6";
 const PRODUCT_LIST_URL = "index.php?page=Mnt-Products-ProductList";
 
 class ProductForm extends PublicController
@@ -41,6 +42,8 @@ class ProductForm extends PublicController
 
     private $hasErrors = false;
     private $errors = [];
+
+    private $xsfToken = '';
 
 
     public function run(): void
@@ -106,6 +109,9 @@ class ProductForm extends PublicController
             }
             $this->productId = intval($tmpProductId);
             $tmpProductoRow = PrdDao::getById($this->productId);
+            if (!$tmpProductoRow) {
+                $tmpProductoRow = [];
+            }
             if (count($tmpProductoRow) === 0) {
                 $this->registerError("Producto no existe", true);
             }
@@ -121,6 +127,7 @@ class ProductForm extends PublicController
     }
     private function getPostBody(): void
     {
+        $this->validateXsfToken($_POST["xsftoken"] ?? "");
         $this->productId = intval($_POST["productId"] ?? "0");
         $this->productName = $_POST["productName"] ?? "";
         $this->productDescription = $_POST["productDescription"] ?? "";
@@ -148,6 +155,43 @@ class ProductForm extends PublicController
                 )) {
                     Site::redirectToWithMsg(PRODUCT_LIST_URL, "Producto Agregado Satisfactoriamente");
                 }
+                break;
+            case "UPD":
+                if (PrdDao::update(
+                    $this->productName,
+                    $this->productDescription,
+                    $this->productPrice,
+                    $this->productImgUrl,
+                    $this->productStock,
+                    $this->productStatus,
+                    $this->productId
+                )) {
+                    Site::redirectToWithMsg(PRODUCT_LIST_URL, "Producto Actualizado Satisfactoriamente");
+                }
+                break;
+            case "DEL":
+                if (PrdDao::delete(
+                    $this->productId
+                )) {
+                    Site::redirectToWithMsg(PRODUCT_LIST_URL, "Producto Eliminado Satisfactoriamente");
+                }
+                break;
+        }
+    }
+    private function generarXsfToken()
+    {
+        $token =  hash("sha256", time() . rand(10000, 99999) . PRODUCT_FORM_XSF_SEED);
+        $_SESSION["PRODUCT_FORM_XSF_T"] = $token;
+        $this->xsfToken = $token;
+    }
+    private function validateXsfToken($token)
+    {
+        if (isset($_SESSION["PRODUCT_FORM_XSF_T"])) {
+            if ($token !== $_SESSION["PRODUCT_FORM_XSF_T"]) {
+                $this->registerError("Algo no esta bien, intente nuevamente!", true);
+            }
+        } else {
+            $this->registerError("Algo no esta bien, intente nuevamente!", true);
         }
     }
     private function prepareViewData(): void
@@ -167,10 +211,19 @@ class ProductForm extends PublicController
         $this->viewData["productImgUrl"] = $this->productImgUrl;
         $this->viewData["productStock"] = $this->productStock;
         $this->viewData["productStatus"] = $this->productStatus;
+        $this->viewData["readonly"] = "";
+        $this->viewData["showGuardar"] = true;
+        if (in_array($this->mode, ["DSP", "DEL"])) {
+            $this->viewData["readonly"] = "readonly";
+            $this->viewData["showGuardar"] = ($this->mode !== "DSP");
+        }
+
 
         $this->viewData["action"] = "index.php?page=Mnt-Products-ProductForm&mode=" . $this->mode;
         if ($this->mode !== "INS") {
             $this->viewData["action"] .= "&productId=" . $this->productId;
         }
+        $this->generarXsfToken();
+        $this->viewData["xsftoken"] = $this->xsfToken;
     }
 }

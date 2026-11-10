@@ -5,6 +5,7 @@
     <form class="col-12 col-m-8 offset-m-2 col-l-6 offset-l-3"
         action="{{action}}" method="post">
         <input type="hidden" name="productId" value="{{productId}}" />
+        <input type="hidden" name="xsftoken" value="{{xsftoken}}" />
         <!-- productId
         productName
         productDescription
@@ -15,36 +16,38 @@
         -->
         <div class="row my-3">
             <label class="col-12 col-m-5 col-l-4" for="productName">Nombre</label>
-            <input class="col-12 col-m-7 col-l-8" type="text" name="productName" value="{{productName}}"
+            <input {{readonly}} class="col-12 col-m-7 col-l-8" type="text" name="productName" value="{{productName}}"
                 id="productName" />
         </div>
         <div class="row my-3">
             <label class="col-12 col-m-5 col-l-4" for="productDescription">Descripción</label>
-            <input class="col-12 col-m-7 col-l-8" type="text" name="productDescription" value="{{productDescription}}"
+            <input {{readonly}} class="col-12 col-m-7 col-l-8" type="text" name="productDescription" value="{{productDescription}}"
                 id="productDescription" />
         </div>
         <div class="row my-3">
             <label class="col-12 col-m-5 col-l-4" for="productPrice">Precio</label>
-            <input class="col-12 col-m-7 col-l-8" type="number" name="productPrice" value="{{productPrice}}"
+            <input {{readonly}} class="col-12 col-m-7 col-l-8" type="number" name="productPrice" value="{{productPrice}}"
                 id="productPrice" />
         </div>
         <div class="row my-3">
             <label class="col-12 col-m-5 col-l-4" for="productImgUrl">Imágen (url)</label>
-            <input class="col-12 col-m-7 col-l-8" type="url" name="productImgUrl" value="{{productImgUrl}}"
+            <input {{readonly}} class="col-12 col-m-7 col-l-8" type="url" name="productImgUrl" value="{{productImgUrl}}"
                 id="productImgUrl" />
         </div>
         <div class="row my-3">
             <label class="col-12 col-m-5 col-l-4" for="productStock">Inventario</label>
-            <input class="col-12 col-m-7 col-l-8" type="number" name="productStock" value="{{productStock}}"
+            <input {{readonly}} class="col-12 col-m-7 col-l-8" type="number" name="productStock" value="{{productStock}}"
                 id="productStock" />
         </div>
         <div class="row my-3">
             <label class="col-12 col-m-5 col-l-4" for="productStatus">Estado</label>
-            <input class="col-12 col-m-7 col-l-8" type="text" name="productStatus" value="{{productStatus}}"
+            <input {{readonly}} class="col-12 col-m-7 col-l-8" type="text" name="productStatus" value="{{productStatus}}"
                 id="productStatus" />
         </div>
         <div class="row my-3 flex-end">
+            {{if showGuardar}}
             <button class="col-12 col-m-2 primary" type="submit">Guardar</button>&nbsp;
+            {{endif showGuardar}}
             <button class="col-12 col-m-2" id="btnCancelar">Cancelar</button>
         </div>
     </form>
